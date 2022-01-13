@@ -60,7 +60,7 @@ export default function AddressForm(props) {
       setN_Notifi("Họ tên không được để trống");
       check = false;
     } else {
-      if (!(/^[A-Za-z\s]+$/.test(name))) {
+      if (!(/^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂẾưăạảấầẩẫậắằẳẵặẹẻẽềềểếỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\s]+$/.test(name))) {
         setN_Notifi("Họ tên không đúng định dạng");
         check = false;
       }
