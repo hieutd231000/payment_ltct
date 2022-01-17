@@ -98,7 +98,7 @@ export default function Review() {
     ];
   }
 
-  const [confirm, setConfirm] = useState(true)
+  const [confirm, setConfirm] = useState(false)
   const [step, setStep] = useState(3);
   const [btnDisable, setBtnDisable] = useState("flex");
   const navigate = useNavigate();
