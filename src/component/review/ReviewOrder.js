@@ -8,8 +8,9 @@ import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Button from '@mui/material/Button';
+import { LoadingButton } from '@mui/lab';
 import Box from '@mui/material/Box';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { FormHelperText } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
@@ -19,6 +20,7 @@ import Paper from '@mui/material/Paper';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import swal from 'sweetalert';
+import axios from 'axios';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
@@ -28,36 +30,65 @@ const theme = createTheme();
 
 const products = [
   {
+    id: 124123,
     name: 'Sản phẩm 1',
-    desc: 'Something else',
+    desc: 'Số lượng: 3',
     price: '15.000VND',
   },
   {
+    id: 125123,
     name: 'Sản phẩm 2',
-    desc: 'Something else',
+    desc: 'Số lượng: 3',
     price: '15.000VND',
   },
   {
+    id: 127123,
     name: 'Sản phẩm 3',
-    desc: 'Something else',
+    desc: 'Số lượng: 3',
     price: '15.000VND',
   },
   {
+    id: 128123,
     name: 'Sản phẩm 4',
-    desc: 'Something else',
+    desc: 'Số lượng: 3',
     price: '15.000VND',
   },
   { name: 'Phí ship', desc: '', price: 'Free' },
 ];
 
+
 const addresses = ['Ha Noi'];
 
 
 export default function Review() {
+
+  // const [products1, setProducts1] = useState([]);
+  // //Get product cart
+  // useEffect(() => {
+  //   getProductCart();
+  // }, [])
+
+  // const getProductCart = async () => {
+  //   const res = await axios.get("https://laptrinhcautrucapi.herokuapp.com/product/show");
+  //   console.log(res.status);
+  //   if (res.status === 200) {
+  //     for (let i = 0; i <= 4; i++) {
+  //       setProducts1([...products1, { name: res.data[i].name, desc: 'Số lượng: 3', price: "58.000VND" }])
+  //       // products.unshift({ name: res.data[i].name, desc: 'Số lượng: 3', price: "58.000VND" });
+  //     }
+  //     setProducts1([...products1, { name: 'Phí ship', desc: '', price: 'Free' }])
+
+  //   }
+  // }
+
+  // console.log(products1);
+
+
+  const [isLoading, setIsLoading] = useState(false);
   //Get customer info
   const { state } = useLocation();
   var { name, address, district, city, cardNumber, cardName, cvv, expiredDate } = state;
-  console.log(state);
+  // console.log(state);
   if (cardName != undefined) {
     var payments = [
       { name: 'Card type', detail: 'Visa' },
@@ -67,7 +98,7 @@ export default function Review() {
     ];
   }
 
-  const [confirm, setConfirm] = useState(false)
+  const [confirm, setConfirm] = useState(true)
   const [step, setStep] = useState(3);
   const [btnDisable, setBtnDisable] = useState("flex");
   const navigate = useNavigate();
@@ -77,18 +108,40 @@ export default function Review() {
   const handleNext = () => {
     setConfirm(true);
   }
-  const handleOkeBtn = () => {
-    setStep(4);
-    setBtnDisable('none');
-    swal({
-      title: "Success!",
-      text: "Bạn đã đặt hàng thành công",
-      icon: "success",
-      button: "OK!",
-    })
-      .then((value) => {
-        navigate('/');
-      });
+  const handleOkeBtn = async () => {
+    setIsLoading(true);
+    let checkOrder = true;
+    for (let i = 0; i <= 3; i++) {
+      const res = await axios.post("https://stark-shore-97814.herokuapp.com/api/subtractNumber", { id: products[i].id, number: 1 });
+      if (res.status === 404)
+        checkOrder = false;
+    }
+    if (checkOrder) {
+      setStep(4);
+      setBtnDisable('none');
+      swal({
+        title: "Success!",
+        text: "Bạn đã đặt hàng thành công",
+        icon: "success",
+        button: "OK!",
+      })
+        .then((value) => {
+          navigate('/');
+        });
+    } else {
+      setStep(4);
+      setBtnDisable('none');
+      swal({
+        title: "Failure!",
+        text: "Đặt hàng không thành công",
+        icon: "error",
+        button: "OK!",
+      })
+        .then((value) => {
+          navigate('/');
+        });
+    }
+    setIsLoading(false);
   }
   return (
     <ThemeProvider theme={theme}>
@@ -133,13 +186,14 @@ export default function Review() {
                   Mã đơn hàng của bạn là #1234. Chúng tôi đã gửi email xác nhận đơn hàng của bạn và sẽ gửi cho bạn thông tin khi đơn hàng của bạn được giao.
                 </Typography>
                 <Box sx={{ display: btnDisable, justifyContent: 'flex-end' }}>
-                  <Button
+                  <LoadingButton
                     variant="contained"
                     onClick={handleOkeBtn}
                     sx={{ mt: 5, ml: 2 }}
+                    loading={isLoading}
                   >
                     Ok
-                  </Button>
+                  </LoadingButton>
                 </Box>
               </React.Fragment>
             ) : (
